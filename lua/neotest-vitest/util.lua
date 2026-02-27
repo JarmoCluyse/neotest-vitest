@@ -20,7 +20,9 @@ M.path = (function()
 
   local function restore_windows_path(path)
     if is_windows then
-      path = path:sub(1, 1):upper() .. path:sub(2)
+      if path:match("^[a-zA-Z]:") then
+        path = path:sub(1, 1):upper() .. path:sub(2)
+      end
       path = path:gsub("/", "\\")
     end
     return path
