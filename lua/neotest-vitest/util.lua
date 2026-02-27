@@ -18,14 +18,6 @@ M.path = (function()
     return path
   end
 
-  local function restore_windows_path(path)
-    if is_windows then
-      path = path:sub(1, 1):upper() .. path:sub(2)
-      path = path:gsub("/", "\\")
-    end
-    return path
-  end
-
   local function exists(filename)
     local stat = uv.fs_stat(filename)
     return stat and stat.type or false
@@ -137,7 +129,7 @@ M.path = (function()
     dirname = dirname,
     join = path_join,
     sanitize = sanitize,
-    restore_windows_path = restore_windows_path,
+
     traverse_parents = traverse_parents,
     iterate_parents = iterate_parents,
     is_descendant = is_descendant,
@@ -257,8 +249,7 @@ function M.parsed_json_to_results(data, output_file, consoleOut)
   local tests = {}
 
   for _, testResult in pairs(data.testResults) do
-    local testFn = testResult.name
-    testFn = M.path.restore_windows_path(testFn)
+    local testFn = vim.fs.normalize(testResult.name)
 
     for _, assertionResult in pairs(testResult.assertionResults) do
       local status, name = assertionResult.status, assertionResult.title
